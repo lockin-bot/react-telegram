@@ -43,7 +43,7 @@ const TypedApp: React.FC = () => {
       
       {/* Code block */}
       <pre>
-        <code className="language-typescript">
+        <code class="language-typescript">
           {`const message = "Hello, Telegram!";
 console.log(message);`}
         </code>

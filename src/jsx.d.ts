@@ -13,7 +13,7 @@ declare module 'react' {
       s: { children?: ReactNode };
       strike: { children?: ReactNode };
       del: { children?: ReactNode };
-      code: { children?: ReactNode };
+      code: { children?: ReactNode; class?: string };
       
       // Span with special className
       span: {
