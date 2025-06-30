@@ -35,7 +35,22 @@ interface Container {
 
 let currentUpdatePriority: number = NoEventPriority;
 
-const hostConfig: any = {
+const hostConfig: ReactReconciler.HostConfig<
+  string, // Type
+  any, // Props
+  Container, // Container
+  Node, // Instance
+  TextNode, // TextInstance
+  any, // SuspenseInstance
+  any, // HydratableInstance
+  any, // PublicInstance
+  any, // HostContext
+  any, // UpdatePayload
+  any, // ChildSet
+  any, // TimeoutHandle
+  any, // NoTimeout
+  any // TransitionStatus
+> = {
   supportsMutation: false,
   supportsPersistence: true,
 
@@ -155,42 +170,33 @@ const hostConfig: any = {
   },
 
   // Persistence methods
+// @ts-expect-error - React reconciler types are complex and change between versions
   cloneInstance(
     instance: any,
     type: string,
     oldProps: any,
     newProps: any,
-    internalInstanceHandle: any,
     keepChildren: boolean,
-    recyclableInstance: any
+    children?: any[]
   ) {
-    // Deep clone the instance
+    // Deep clone but preserve functions
     const clone = JSON.parse(JSON.stringify(instance));
-    
-    // Preserve functions
     if (instance.onClick) {
       clone.onClick = instance.onClick;
     }
-    
-    // Update props if needed
-    if (newProps.onClick && clone.type === 'button') {
-      clone.onClick = newProps.onClick;
+    // Handle children based on keepChildren flag
+    if (clone.children && Array.isArray(clone.children)) {
+      if (keepChildren) {
+        // Keep existing children
+        clone.children = instance.children;
+      } else if (children) {
+        // Use provided children
+        clone.children = children;
+      } else {
+        // Clear children
+        clone.children = [];
+      }
     }
-    
-    // Update button text from props
-    if (clone.type === 'button' && typeof newProps.children === 'string') {
-      clone.text = newProps.children;
-    }
-    
-    // Handle children
-    if (keepChildren && instance.children) {
-      // Keep the original children array reference
-      clone.children = instance.children;
-    } else if (!keepChildren && 'children' in clone) {
-      // Clear children, they will be rebuilt
-      clone.children = [];
-    }
-    
     return clone;
   },
 
@@ -204,23 +210,18 @@ const hostConfig: any = {
 
   finalizeContainerChildren(container: Container, newChildren: any[]) {
     container.root.children = newChildren;
+    hostConfig.resetAfterCommit(container);
   },
 
   replaceContainerChildren(container: Container, newChildren: any[]) {
     container.root.children = newChildren;
     hostConfig.resetAfterCommit(container);
-    if (container.onRenderContainer) {
-      container.onRenderContainer(container.root);
-    }
-  },
-  
-  completeWork(instance: any, type: string, props: any, internalInstanceHandle: any) {
-    // This is called after all children have been appended
-    return instance;
+    container.onRenderContainer?.(container.root);
   },
 
   cloneHiddenInstance(instance: any, type: string, props: any) {
-    return hostConfig.cloneInstance!(instance, type, props, props, null, true, null);
+    // @ts-expect-error - React reconciler types are complex and change between versions
+    return hostConfig.cloneInstance(instance, type, props, props, true);
   },
 
   cloneHiddenTextInstance(instance: any) {
@@ -232,23 +233,22 @@ const hostConfig: any = {
     return instance;
   },
 
+  prepareUpdate() {
+    return null;
+  },
 
+  shouldDeprioritizeSubtree() {
+    return false;
+  },
 
   // Persistence child building
   appendChild(parent: any, child: any) {
-    if ('children' in parent && Array.isArray(parent.children)) {
-      parent.children.push(child);
-    } else if (parent.type === 'codeblock' && child.type === 'text') {
-      parent.content = child.content;
-    }
+    if (!parent.children) parent.children = [];
+    parent.children.push(child);
   },
 
   appendChildToContainer(container: Container, child: any) {
-    container.root.children.push(child);
-  },
-  
-  appendInitialChildToContainer(container: Container, child: any) {
-    container.root.children.push(child);
+    // Not used in persistence mode
   },
 
   // Stubs for mutation mode methods (not used in persistence)
@@ -260,10 +260,6 @@ const hostConfig: any = {
   commitMount: () => {},
   commitUpdate: () => {},
   clearContainer: () => {},
-  
-  // Additional persistence methods
-  appendAllChildren: () => {},
-  finalizeInitialChildrenPersistent: () => false,
 
   // Scheduling
   scheduleTimeout: setTimeout,
@@ -303,7 +299,8 @@ const hostConfig: any = {
   suspendInstance: () => {},
   waitForCommitToBeReady: () => null,
   NotPendingTransition: null,
-  HostTransitionContext: null as any,
+  // @ts-expect-error - React reconciler types are complex and change between versions
+  HostTransitionContext: {},
   
   // Microtask support
   supportsMicrotasks: true,
