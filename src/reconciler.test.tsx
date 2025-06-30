@@ -1,3 +1,4 @@
+/// <reference path="./jsx.d.ts" />
 import { describe, it, expect, vi } from 'vitest';
 import React, { useState } from 'react';
 import { createContainer } from './reconciler';
@@ -162,10 +163,12 @@ describe('Telegram Reconciler', () => {
     
     expect(container.root.children).toHaveLength(1);
     const row = container.root.children[0];
-    expect(row.type).toBe('row');
-    expect(row.children).toHaveLength(2);
-    expect(row.children[0].id).toBe('0-0');
-    expect(row.children[1].id).toBe('0-1');
+    expect(row?.type).toBe('row');
+    if (row?.type === 'row') {
+      expect(row.children).toHaveLength(2);
+      expect(row.children[0]?.id).toBe('0-0');
+      expect(row.children[1]?.id).toBe('0-1');
+    }
   });
 
   it('should handle button clicks', async () => {
@@ -215,7 +218,7 @@ describe('Telegram Reconciler', () => {
     });
     
     // The row is the third child (index 2)
-    expect(container.root.children[2].type).toBe('row');
+    expect(container.root.children[2]?.type).toBe('row');
     
     // Click increase button
     clickButton('0-1');

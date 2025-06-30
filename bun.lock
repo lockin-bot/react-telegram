@@ -9,8 +9,8 @@
       },
       "devDependencies": {
         "@types/bun": "latest",
-        "@types/react": "^19.1.8",
         "@types/react-reconciler": "^0.32.0",
+        "pure-react-types": "^0.1.4",
         "vitest": "^3.2.4",
       },
       "peerDependencies": {
@@ -186,6 +186,8 @@
     "picomatch": ["picomatch@4.0.2", "", {}, "sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg=="],
 
     "postcss": ["postcss@8.5.6", "", { "dependencies": { "nanoid": "^3.3.11", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg=="],
+
+    "pure-react-types": ["pure-react-types@0.1.4", "", {}, "sha512-8y1P/kWmo839jDqhLnaTAatjwU2SVjs34iwOwYtiMdcfGLBGiOrUTPjpb9hOgTB3cPNuAT0q90AtmPEIp1zJxA=="],
 
     "react": ["react@19.1.0", "", {}, "sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg=="],
 

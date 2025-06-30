@@ -6,7 +6,10 @@
       "Bash(bun run:*)",
       "Bash(bun info:*)",
       "Bash(npm view:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(bun remove:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

@@ -1,3 +1,4 @@
+/// <reference path="./jsx.d.ts" />
 import React, { useState } from 'react';
 import { createContainer } from './reconciler';
 

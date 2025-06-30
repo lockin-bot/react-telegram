@@ -1,67 +1,31 @@
 import ReactReconciler from 'react-reconciler';
 import { DefaultEventPriority, NoEventPriority } from 'react-reconciler/constants';
+import type {
+  TelegramTextNode as TextNode,
+  TelegramFormattedNode as FormattedNode,
+  TelegramLinkNode as LinkNode,
+  TelegramEmojiNode as EmojiNode,
+  TelegramCodeBlockNode as CodeBlockNode,
+  TelegramBlockQuoteNode as BlockQuoteNode,
+  TelegramButtonNode as ButtonNode,
+  TelegramRowNode as RowNode,
+  TelegramRootNode as RootNode,
+  TelegramNode as Node
+} from './jsx';
 
-export interface TextNode {
-  type: 'text';
-  content: string;
-  formatting?: {
-    bold?: boolean;
-    italic?: boolean;
-    underline?: boolean;
-    strikethrough?: boolean;
-    spoiler?: boolean;
-    code?: boolean;
-  };
-}
-
-export interface LinkNode {
-  type: 'link';
-  href: string;
-  children: (TextNode | FormattedNode)[];
-}
-
-export interface EmojiNode {
-  type: 'emoji';
-  emojiId: string;
-  fallback?: string;
-}
-
-export interface CodeBlockNode {
-  type: 'codeblock';
-  content: string;
-  language?: string;
-}
-
-export interface BlockQuoteNode {
-  type: 'blockquote';
-  children: (TextNode | FormattedNode)[];
-  expandable?: boolean;
-}
-
-export interface FormattedNode {
-  type: 'formatted';
-  format: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'spoiler' | 'code';
-  children: (TextNode | FormattedNode | LinkNode)[];
-}
-
-export interface ButtonNode {
-  type: 'button';
-  id: string;
-  text: string;
-  onClick?: () => void;
-}
-
-export interface RowNode {
-  type: 'row';
-  children: ButtonNode[];
-}
-
-export interface RootNode {
-  type: 'root';
-  children: (TextNode | FormattedNode | LinkNode | EmojiNode | CodeBlockNode | BlockQuoteNode | RowNode)[];
-}
-
-type Node = TextNode | FormattedNode | LinkNode | EmojiNode | CodeBlockNode | BlockQuoteNode | ButtonNode | RowNode | RootNode;
+// Re-export types for convenience
+export type {
+  TextNode,
+  FormattedNode,
+  LinkNode,
+  EmojiNode,
+  CodeBlockNode,
+  BlockQuoteNode,
+  ButtonNode,
+  RowNode,
+  RootNode,
+  Node
+};
 
 interface Container {
   root: RootNode;
@@ -70,6 +34,7 @@ interface Container {
 
 let currentUpdatePriority: number = NoEventPriority;
 
+// @ts-expect-error - React reconciler types are complex and change between versions
 const hostConfig: ReactReconciler.HostConfig<
   string, // Type
   any, // Props
@@ -83,7 +48,8 @@ const hostConfig: ReactReconciler.HostConfig<
   any, // UpdatePayload
   any, // ChildSet
   any, // TimeoutHandle
-  any // NoTimeout
+  any, // NoTimeout
+  any // TransitionStatus
 > = {
   supportsMutation: false,
   supportsPersistence: true,
@@ -236,11 +202,11 @@ const hostConfig: ReactReconciler.HostConfig<
   },
 
   cloneHiddenInstance(instance: any) {
-    return this.cloneInstance(instance);
+    return hostConfig.cloneInstance(instance);
   },
 
   cloneHiddenTextInstance(instance: any) {
-    return this.cloneInstance(instance);
+    return hostConfig.cloneInstance(instance);
   },
 
   getPublicInstance(instance: any) {
@@ -259,11 +225,6 @@ const hostConfig: ReactReconciler.HostConfig<
   appendChild(parent: any, child: any) {
     if (!parent.children) parent.children = [];
     parent.children.push(child);
-  },
-  
-  // Clear existing children when building new tree
-  createContainerChildSet() {
-    return [];
   },
 
   appendChildToContainer(container: Container, child: any) {
@@ -318,7 +279,7 @@ const hostConfig: ReactReconciler.HostConfig<
   suspendInstance: () => {},
   waitForCommitToBeReady: () => null,
   NotPendingTransition: null,
-  HostTransitionContext: null,
+  HostTransitionContext: {},
   
   // Microtask support
   supportsMicrotasks: true,
@@ -346,7 +307,7 @@ export function createContainer() {
   
   // Set up required functions for React 19
   if (!TelegramReconciler.injectIntoDevTools) {
-    TelegramReconciler.injectIntoDevTools = () => {};
+    TelegramReconciler.injectIntoDevTools = () => false;
   }
   
   return {
