@@ -6,13 +6,16 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react-reconciler": "^0.32.0",
-    "pure-react-types": "^0.1.4",
+    "@types/react": "npm:pure-react-types@^0.1.4",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@mtcute/bun": "^0.24.3",
+    "@mtcute/dispatcher": "^0.24.3",
+    "@mtcute/html-parser": "^0.24.0",
     "react": "^19.1.0",
     "react-reconciler": "^0.32.0"
   }
