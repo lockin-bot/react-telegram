@@ -170,15 +170,31 @@ const hostConfig: ReactReconciler.HostConfig<
   },
 
   // Persistence methods
-  cloneInstance(instance: any) {
+  cloneInstance(
+    instance: any,
+    type: string,
+    oldProps: any,
+    newProps: any,
+    keepChildren: boolean,
+    children?: any[]
+  ) {
     // Deep clone but preserve functions
     const clone = JSON.parse(JSON.stringify(instance));
     if (instance.onClick) {
       clone.onClick = instance.onClick;
     }
-    // Clear children for containers - they'll be rebuilt
-    if (clone.children) {
-      clone.children = [];
+    // Handle children based on keepChildren flag
+    if (clone.children && Array.isArray(clone.children)) {
+      if (keepChildren) {
+        // Keep existing children
+        clone.children = instance.children;
+      } else if (children) {
+        // Use provided children
+        clone.children = children;
+      } else {
+        // Clear children
+        clone.children = [];
+      }
     }
     return clone;
   },
@@ -201,12 +217,13 @@ const hostConfig: ReactReconciler.HostConfig<
     hostConfig.resetAfterCommit(container);
   },
 
-  cloneHiddenInstance(instance: any) {
-    return hostConfig.cloneInstance(instance);
+  cloneHiddenInstance(instance: any, type: string, props: any) {
+    return hostConfig.cloneInstance(instance, type, props, props, true);
   },
 
   cloneHiddenTextInstance(instance: any) {
-    return hostConfig.cloneInstance(instance);
+    // Text instances are simple clones
+    return JSON.parse(JSON.stringify(instance));
   },
 
   getPublicInstance(instance: any) {

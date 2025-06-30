@@ -9,7 +9,10 @@
       "Bash(find:*)",
       "Bash(bun remove:*)",
       "Bash(bunx tsc:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
