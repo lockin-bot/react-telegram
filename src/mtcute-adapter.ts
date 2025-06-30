@@ -26,6 +26,7 @@ export class MtcuteAdapter {
   private client: TelegramClient;
   private dispatcher: Dispatcher;
   private activeContainers: Map<string, ReturnType<typeof createContainer>> = new Map();
+  private commandHandlers: Map<string, (ctx: any) => ReactElement> = new Map();
 
   constructor(config: MtcuteAdapterConfig) {
     this.client = new TelegramClient({
@@ -44,6 +45,21 @@ export class MtcuteAdapter {
   }
 
   private setupHandlers() {
+    // Handle new messages for commands
+    this.dispatcher.onNewMessage(async (msg) => {
+      if (msg.text && msg.text.startsWith('/')) {
+        const commandMatch = msg.text.match(/^\/([\w@]+)/);
+        if (commandMatch) {
+          const command = commandMatch[1];
+          const handler = command ? this.commandHandlers.get(command) : undefined;
+          if (handler) {
+            const app = handler(msg);
+            await this.sendReactMessage(msg.chat.id, app);
+          }
+        }
+      }
+    });
+
     // Handle callback queries (button clicks)
     this.dispatcher.onCallbackQuery(async (query) => {
       if (!query.data) {
@@ -202,16 +218,29 @@ export class MtcuteAdapter {
     // Store the container for button click handling
     this.activeContainers.set(containerId, container);
     
+    // Track the message ID for editing
+    let messageId: number | null = null;
+    
     // Set up re-render callback
     container.container.onRenderContainer = async (root) => {
       const textWithEntities = this.rootNodeToTextWithEntities(root);
       const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
       
-      // For now, we'll send a new message each time
-      // In a real app, you'd want to edit the existing message
-      await this.client.sendText(chatId, textWithEntities, {
-        replyMarkup
-      });
+      if (messageId === null) {
+        // First render: send a new message
+        const sentMessage = await this.client.sendText(chatId, textWithEntities, {
+          replyMarkup
+        });
+        messageId = sentMessage.id;
+      } else {
+        // Subsequent renders: edit the existing message
+        await this.client.editMessage({
+          chatId,
+          message: messageId,
+          text: textWithEntities,
+          replyMarkup
+        });
+      }
     };
     
     // Initial render
@@ -259,12 +288,7 @@ export class MtcuteAdapter {
 
   // Convenience method to handle commands with React
   onCommand(command: string, handler: (ctx: any) => ReactElement) {
-    this.dispatcher.onNewMessage(async (msg) => {
-      if (msg.text === `/${command}`) {
-        const app = handler(msg);
-        await this.sendReactMessage(msg.chat.id, app);
-      }
-    });
+    this.commandHandlers.set(command, handler);
   }
 
   getClient() {
