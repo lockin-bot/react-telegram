@@ -30,6 +30,7 @@ export type {
 interface Container {
   root: RootNode;
   buttonHandlers: Map<string, () => void>;
+  onRenderContainer?: (root: RootNode) => void;
 }
 
 let currentUpdatePriority: number = NoEventPriority;
@@ -215,6 +216,7 @@ const hostConfig: ReactReconciler.HostConfig<
   replaceContainerChildren(container: Container, newChildren: any[]) {
     container.root.children = newChildren;
     hostConfig.resetAfterCommit(container);
+    container.onRenderContainer?.(container.root);
   },
 
   cloneHiddenInstance(instance: any, type: string, props: any) {

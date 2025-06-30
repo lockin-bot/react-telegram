@@ -30,24 +30,17 @@ const App = () => {
 console.log('Initial render');
 render(<App />);
 
+container.onRenderContainer = (root) => {
+  console.log('onRenderContainer called');
+  console.log(JSON.stringify(root, null, 2));
+};
+
 setTimeout(() => {
-  console.log('\nInitial state:');
-  console.log(JSON.stringify(container.root, null, 2));
-  console.log('Button handlers:', container.buttonHandlers.size);
-  
   console.log('\nClicking increase (0-1)');
   clickButton('0-1');
   
   setTimeout(() => {
-    console.log('\nAfter increase:');
-    console.log(JSON.stringify(container.root, null, 2));
-    
     console.log('\nClicking decrease (0-0)');
     clickButton('0-0');
-    
-    setTimeout(() => {
-      console.log('\nAfter decrease:');
-      console.log(JSON.stringify(container.root, null, 2));
-    }, 10);
   }, 10);
 }, 10);
