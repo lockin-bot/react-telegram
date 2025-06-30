@@ -1,6 +1,7 @@
 import { TelegramClient } from '@mtcute/bun';
 import { Dispatcher } from '@mtcute/dispatcher';
-import { MessageEntity, TextWithEntities, InlineKeyboardMarkup, InlineKeyboardButton } from '@mtcute/bun';
+import type { TextWithEntities } from '@mtcute/bun';
+import { tl } from '@mtcute/tl';
 import type { 
   RootNode, 
   TextNode, 
@@ -45,15 +46,21 @@ export class MtcuteAdapter {
   private setupHandlers() {
     // Handle callback queries (button clicks)
     this.dispatcher.onCallbackQuery(async (query) => {
-      const [containerId, buttonId] = query.data.split(':');
-      const container = this.activeContainers.get(containerId);
+      if (!query.data) {
+        await query.answer({ text: 'No data provided' });
+        return;
+      }
       
-      if (container) {
+      const dataStr = typeof query.data === 'string' ? query.data : new TextDecoder().decode(query.data);
+      const [containerId, buttonId] = dataStr.split(':');
+      const container = containerId ? this.activeContainers.get(containerId) : undefined;
+      
+      if (container && buttonId) {
         // Click the button in our React app
         container.clickButton(buttonId);
         
         // Answer the callback query
-        await query.answer();
+        await query.answer({ text: '' });
       } else {
         await query.answer({ text: 'Session expired. Please start again.' });
       }
@@ -63,7 +70,7 @@ export class MtcuteAdapter {
   // Convert our RootNode to TextWithEntities
   private rootNodeToTextWithEntities(root: RootNode): TextWithEntities {
     const text: string[] = [];
-    const entities: MessageEntity[] = [];
+    const entities: tl.TypeMessageEntity[] = [];
     
     const processNode = (node: any, parentFormat?: string) => {
       switch (node.type) {
@@ -79,22 +86,22 @@ export class MtcuteAdapter {
           if (length > 0) {
             switch (node.format) {
               case 'bold':
-                entities.push({ type: 'bold', offset: startOffset, length });
+                entities.push({ _: 'messageEntityBold', offset: startOffset, length });
                 break;
               case 'italic':
-                entities.push({ type: 'italic', offset: startOffset, length });
+                entities.push({ _: 'messageEntityItalic', offset: startOffset, length });
                 break;
               case 'underline':
-                entities.push({ type: 'underline', offset: startOffset, length });
+                entities.push({ _: 'messageEntityUnderline', offset: startOffset, length });
                 break;
               case 'strikethrough':
-                entities.push({ type: 'strikethrough', offset: startOffset, length });
+                entities.push({ _: 'messageEntityStrike', offset: startOffset, length });
                 break;
               case 'spoiler':
-                entities.push({ type: 'spoiler', offset: startOffset, length });
+                entities.push({ _: 'messageEntitySpoiler', offset: startOffset, length });
                 break;
               case 'code':
-                entities.push({ type: 'code', offset: startOffset, length });
+                entities.push({ _: 'messageEntityCode', offset: startOffset, length });
                 break;
             }
           }
@@ -107,7 +114,7 @@ export class MtcuteAdapter {
           
           if (linkLength > 0) {
             entities.push({ 
-              type: 'text_link', 
+              _: 'messageEntityTextUrl', 
               offset: linkStartOffset, 
               length: linkLength,
               url: node.href 
@@ -120,10 +127,10 @@ export class MtcuteAdapter {
           const emojiOffset = text.join('').length;
           text.push(node.fallback || '👍');
           entities.push({
-            type: 'custom_emoji',
+            _: 'messageEntityCustomEmoji',
             offset: emojiOffset,
             length: node.fallback?.length || 2,
-            customEmojiId: BigInt(node.emojiId)
+            documentId: node.emojiId as any // MTCute expects Long but accepts string/bigint
           });
           break;
           
@@ -131,10 +138,10 @@ export class MtcuteAdapter {
           const codeStartOffset = text.join('').length;
           text.push(node.content);
           entities.push({
-            type: 'pre',
+            _: 'messageEntityPre',
             offset: codeStartOffset,
             length: node.content.length,
-            language: node.language
+            language: node.language || ''
           });
           break;
           
@@ -145,7 +152,7 @@ export class MtcuteAdapter {
           
           if (quoteLength > 0) {
             entities.push({
-              type: 'blockquote',
+              _: 'messageEntityBlockquote',
               offset: quoteStartOffset,
               length: quoteLength,
               collapsed: node.expandable
@@ -171,19 +178,20 @@ export class MtcuteAdapter {
   }
 
   // Convert row nodes to inline keyboard
-  private rootNodeToInlineKeyboard(root: RootNode, containerId: string): InlineKeyboardMarkup | undefined {
+  private rootNodeToInlineKeyboard(root: RootNode, containerId: string): tl.RawReplyInlineMarkup | undefined {
     const rows = root.children.filter(child => child.type === 'row') as RowNode[];
     
     if (rows.length === 0) return undefined;
     
-    const keyboard: InlineKeyboardButton[][] = rows.map(row => 
+    const keyboard: tl.TypeKeyboardButton[][] = rows.map(row => 
       row.children.map(button => ({
+        _: 'keyboardButtonCallback',
         text: button.text,
-        data: `${containerId}:${button.id}`
-      }))
+        data: Buffer.from(`${containerId}:${button.id}`)
+      }) as tl.TypeKeyboardButton)
     );
     
-    return { inline: keyboard };
+    return { _: 'replyInlineMarkup', rows: keyboard.map(row => ({ _: 'keyboardButtonRow', buttons: row })) };
   }
 
   // Create a React-powered message
@@ -201,9 +209,7 @@ export class MtcuteAdapter {
       
       // For now, we'll send a new message each time
       // In a real app, you'd want to edit the existing message
-      await this.client.sendMessage(chatId, {
-        text: textWithEntities.text,
-        entities: textWithEntities.entities,
+      await this.client.sendText(chatId, textWithEntities, {
         replyMarkup
       });
     };
@@ -239,10 +245,10 @@ export class MtcuteAdapter {
       const textWithEntities = this.rootNodeToTextWithEntities(root);
       const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
       
-      await this.client.editMessage(chatId, {
-        id: messageId,
-        text: textWithEntities.text,
-        entities: textWithEntities.entities,
+      await this.client.editMessage({
+        chatId,
+        message: messageId,
+        text: textWithEntities,
         replyMarkup
       });
     };
@@ -253,9 +259,11 @@ export class MtcuteAdapter {
 
   // Convenience method to handle commands with React
   onCommand(command: string, handler: (ctx: any) => ReactElement) {
-    this.dispatcher.onNewMessage({ text: `/${command}` }, async (msg) => {
-      const app = handler(msg);
-      await this.sendReactMessage(msg.chat.id, app);
+    this.dispatcher.onNewMessage(async (msg) => {
+      if (msg.text === `/${command}`) {
+        const app = handler(msg);
+        await this.sendReactMessage(msg.chat.id, app);
+      }
     });
   }
 
