@@ -10,10 +10,20 @@
     "build:core": "cd packages/core && bun run build",
     "build:adapter": "cd packages/mtcute-adapter && bun run build",
     "test": "bun test",
-    "example": "cd packages/examples && bun run start"
+    "test:watch": "bun test --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "echo 'Add ESLint when configured'",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,tsx}\"",
+    "example": "cd packages/examples && bun run start",
+    "changeset": "changeset",
+    "version": "changeset version && bun install --no-frozen-lockfile",
+    "release": "bun run build && changeset publish",
+    "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@types/bun": "latest",
+    "prettier": "^3.2.5",
     "typescript": "^5"
   }
 }

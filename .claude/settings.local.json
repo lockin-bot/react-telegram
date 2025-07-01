@@ -19,7 +19,8 @@
       "Bash(bun:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

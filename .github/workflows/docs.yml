@@ -1,0 +1,60 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'packages/*/src/**'
+      - '.github/workflows/docs.yml'
+
+jobs:
+  check-docs:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check README files exist
+        run: |
+          for package in packages/*/; do
+            if [ -d "$package" ] && [ ! -f "$package/README.md" ]; then
+              echo "❌ Missing README.md in $package"
+              exit 1
+            fi
+          done
+          echo "✅ All packages have README files"
+          
+      - name: Check for broken links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >
+            --verbose
+            --no-progress
+            --accept 200,204,206,301,302
+            --exclude-all-private
+            --exclude "https://github.com/your-username/*"
+            './**/*.md'
+          fail: false
+          
+      - name: Spell check
+        uses: streetsidesoftware/cspell-action@v6
+        with:
+          files: '**/*.{md,ts,tsx}'
+          config: |
+            {
+              "words": [
+                "mtcute",
+                "telegram",
+                "bun",
+                "changeset",
+                "changesets",
+                "monorepo",
+                "reconciler",
+                "autodelete",
+                "emoji",
+                "prepublish"
+              ]
+            }

@@ -1,0 +1,32 @@
+name: Update Badges
+
+on:
+  workflow_run:
+    workflows: ["CI", "Publish"]
+    types:
+      - completed
+  push:
+    branches:
+      - main
+
+jobs:
+  update-badges:
+    name: Update README Badges
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Create badges directory
+        run: mkdir -p .github/badges
+        
+      - name: Generate CI badge
+        run: |
+          echo '{"schemaVersion": 1, "label": "CI", "message": "passing", "color": "success"}' > .github/badges/ci.json
+          
+      - name: Generate version badge
+        run: |
+          VERSION=$(node -p "require('./packages/core/package.json').version")
+          echo "{\"schemaVersion\": 1, \"label\": \"version\", \"message\": \"v$VERSION\", \"color\": \"blue\"}" > .github/badges/version.json

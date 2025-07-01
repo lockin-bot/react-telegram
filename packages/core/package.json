@@ -21,6 +21,8 @@
     "build": "bun run clean && bun run build:types",
     "build:types": "tsc",
     "clean": "rm -rf dist",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
