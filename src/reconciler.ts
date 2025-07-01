@@ -9,6 +9,7 @@ import type {
   TelegramBlockQuoteNode as BlockQuoteNode,
   TelegramButtonNode as ButtonNode,
   TelegramRowNode as RowNode,
+  TelegramInputNode as InputNode,
   TelegramRootNode as RootNode,
   TelegramNode as Node
 } from './jsx';
@@ -23,6 +24,7 @@ export type {
   BlockQuoteNode,
   ButtonNode,
   RowNode,
+  InputNode,
   RootNode,
   Node
 };
@@ -30,6 +32,7 @@ export type {
 interface Container {
   root: RootNode;
   buttonHandlers: Map<string, () => void>;
+  inputCallbacks: Array<(text: string) => void>;
   onRenderContainer?: (root: RootNode) => void;
 }
 
@@ -91,6 +94,8 @@ const hostConfig: ReactReconciler.HostConfig<
         return { type: 'button', id: '', text: buttonText, onClick: props.onClick };
       case 'row':
         return { type: 'row', children: [] };
+      case 'input':
+        return { type: 'input', onSubmit: props.onSubmit };
       default:
         return { type: 'formatted', format: 'bold', children: [] };
     }
@@ -149,6 +154,14 @@ const hostConfig: ReactReconciler.HostConfig<
             container.buttonHandlers.set(button.id, button.onClick);
           }
         });
+      }
+    });
+    
+    // Collect input callbacks
+    container.inputCallbacks = [];
+    container.root.children.forEach((child: any) => {
+      if (child.type === 'input' && child.onSubmit) {
+        container.inputCallbacks.push(child.onSubmit);
       }
     });
     
@@ -313,6 +326,7 @@ export function createContainer() {
   const container: Container = {
     root: { type: 'root', children: [] },
     buttonHandlers: new Map(),
+    inputCallbacks: [],
   };
   
   const reconcilerContainer = TelegramReconciler.createContainer(

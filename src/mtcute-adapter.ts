@@ -57,6 +57,12 @@ export class MtcuteAdapter {
             await this.sendReactMessage(msg.chat.id, app);
           }
         }
+      } else if (msg.text) {
+        this.activeContainers.forEach(container => {
+          container.container.inputCallbacks.forEach(callback => {
+            callback(msg.text!);
+          });
+        });
       }
     });
 

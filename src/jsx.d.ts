@@ -55,6 +55,10 @@ declare module 'react' {
         onClick?: () => void;
         children?: ReactNode;
       };
+      
+      input: {
+        onSubmit?: (text: string) => void;
+      };
     }
   }
 }
@@ -115,6 +119,11 @@ export interface TelegramRowNode {
   children: TelegramButtonNode[];
 }
 
+export interface TelegramInputNode {
+  type: 'input';
+  onSubmit?: (text: string) => void;
+}
+
 export interface TelegramRootNode {
   type: 'root';
   children: (
@@ -125,6 +134,7 @@ export interface TelegramRootNode {
     | TelegramCodeBlockNode 
     | TelegramBlockQuoteNode 
     | TelegramRowNode
+    | TelegramInputNode
   )[];
 }
 
@@ -137,4 +147,5 @@ export type TelegramNode =
   | TelegramBlockQuoteNode
   | TelegramButtonNode
   | TelegramRowNode
+  | TelegramInputNode
   | TelegramRootNode;
