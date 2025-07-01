@@ -97,7 +97,18 @@ const hostConfig: ReactReconciler.HostConfig<
       case 'blockquote':
         return { type: 'blockquote', children: [], expandable: props.expandable };
       case 'button':
-        const buttonText = typeof props.children === 'string' ? props.children : '';
+        // Extract text from children - handle string, array, or other types
+        let buttonText = '';
+        if (typeof props.children === 'string') {
+          buttonText = props.children;
+        } else if (Array.isArray(props.children)) {
+          // Join array elements, converting non-strings to strings
+          buttonText = props.children.map((child: any) => 
+            typeof child === 'string' ? child : String(child)
+          ).join('');
+        } else if (props.children != null) {
+          buttonText = String(props.children);
+        }
         return { type: 'button', id: '', text: buttonText, onClick: props.onClick };
       case 'row':
         return { type: 'row', children: [] };

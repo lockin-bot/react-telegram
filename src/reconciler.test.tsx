@@ -187,6 +187,50 @@ describe('Telegram Reconciler', () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
+  it('should handle buttons with complex children', async () => {
+    const { container, render } = createContainer();
+    const onClick = vi.fn();
+    const mode = 'normal';
+    
+    render(
+      <row>
+        <button onClick={onClick}>
+          Switch to {mode === 'normal' ? 'Secret' : 'Normal'} Mode
+        </button>
+      </row>
+    );
+    
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    const row = container.root.children[0];
+    expect(row?.type).toBe('row');
+    if (row?.type === 'row') {
+      expect(row.children[0]?.text).toBe('Switch to Secret Mode');
+    }
+  });
+
+  it('should handle buttons with array children', async () => {
+    const { container, render } = createContainer();
+    
+    render(
+      <row>
+        <button>{'Hello'}{' '}{'World'}</button>
+        <button>{['One', ' ', 'Two', ' ', 'Three']}</button>
+        <button>{123} items</button>
+      </row>
+    );
+    
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    const row = container.root.children[0];
+    expect(row?.type).toBe('row');
+    if (row?.type === 'row') {
+      expect(row.children[0]?.text).toBe('Hello World');
+      expect(row.children[1]?.text).toBe('One Two Three');
+      expect(row.children[2]?.text).toBe('123 items');
+    }
+  });
+
   it('should work with React state', async () => {
     const { container, render, clickButton } = createContainer();
     
@@ -238,5 +282,46 @@ describe('Telegram Reconciler', () => {
       type: 'text',
       content: '0'
     });
+  });
+
+  it('should handle input elements', async () => {
+    const { container, render } = createContainer();
+    const onSubmit = vi.fn();
+    
+    render(
+      <>
+        <input onSubmit={onSubmit} />
+        <input onSubmit={onSubmit} autoDelete />
+      </>
+    );
+    
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    expect(container.root.children).toHaveLength(2);
+    expect(container.root.children[0]).toEqual({
+      type: 'input',
+      onSubmit: expect.any(Function),
+      autoDelete: undefined
+    });
+    expect(container.root.children[1]).toEqual({
+      type: 'input',
+      onSubmit: expect.any(Function),
+      autoDelete: true
+    });
+    
+    // Check input callbacks
+    expect(container.inputCallbacks).toHaveLength(2);
+    expect(container.inputCallbacks[0]).toEqual({
+      callback: expect.any(Function),
+      autoDelete: undefined
+    });
+    expect(container.inputCallbacks[1]).toEqual({
+      callback: expect.any(Function),
+      autoDelete: true
+    });
+    
+    // Test callback execution
+    container.inputCallbacks[0]?.callback('test message');
+    expect(onSubmit).toHaveBeenCalledWith('test message');
   });
 });

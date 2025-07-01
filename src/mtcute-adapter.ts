@@ -280,37 +280,6 @@ export class MtcuteAdapter {
     return containerId;
   }
 
-  // Edit an existing message with a new React tree
-  async editReactMessage(
-    chatId: number | string, 
-    messageId: number, 
-    app: ReactElement
-  ) {
-    const containerId = `${chatId}_${messageId}`;
-    let container = this.activeContainers.get(containerId);
-    
-    if (!container) {
-      container = createContainer();
-      this.activeContainers.set(containerId, container);
-    }
-    
-    // Set up edit callback
-    container.container.onRenderContainer = async (root) => {
-      const textWithEntities = this.rootNodeToTextWithEntities(root);
-      const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
-      
-      await this.client.editMessage({
-        chatId,
-        message: messageId,
-        text: textWithEntities,
-        replyMarkup
-      });
-    };
-    
-    // Render the app
-    container.render(app);
-  }
-
   // Convenience method to handle commands with React
   onCommand(command: string, handler: (ctx: any) => ReactElement) {
     this.commandHandlers.set(command, handler);
