@@ -1,4 +1,21 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, ReactElement } from 'react';
+
+type ButtonElement = ReactElement<{
+  onClick?: () => void;
+  children?: ReactNode;
+}, 'button'>;
+
+type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : TupleOf<T, N, []> : never;
+type TupleOf<T, N extends number, R extends readonly unknown[]> = R['length'] extends N ? R : TupleOf<T, N, readonly [T, ...R]>;
+
+
+type ButtonArray<N extends number> = N extends 1 ? ButtonElement | [ButtonElement]
+  : N extends 2 ? ButtonElement | [ButtonElement] | [ButtonElement, ButtonElement]
+  : N extends 3 ? ButtonElement | [ButtonElement] | [ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement]
+  : N extends 4 ? ButtonElement | [ButtonElement] | [ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement]
+  : N extends 5 ? ButtonElement | [ButtonElement] | [ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement]
+  : N extends 8 ? ButtonElement | [ButtonElement] | [ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement] | [ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement, ButtonElement]
+  : never;
 
 declare module 'react' {
   namespace JSX {
@@ -46,9 +63,9 @@ declare module 'react' {
         children?: ReactNode;
       };
       
-      // Interactive elements
+      // Interactive element with strict validation
       row: {
-        children?: ReactNode;
+        children: ButtonArray<8>;
       };
       
       button: {
@@ -118,9 +135,17 @@ export interface TelegramButtonNode {
   onClick?: () => void;
 }
 
+type TelegramButtonArray<N extends number> = N extends 1 ? [TelegramButtonNode]
+  : N extends 2 ? [TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode]
+  : N extends 3 ? [TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode]
+  : N extends 4 ? [TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode]
+  : N extends 5 ? [TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode]
+  : N extends 8 ? [TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode] | [TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode, TelegramButtonNode]
+  : never;
+
 export interface TelegramRowNode {
   type: 'row';
-  children: TelegramButtonNode[];
+  children: TelegramButtonArray<8>;
 }
 
 export interface TelegramInputNode {
