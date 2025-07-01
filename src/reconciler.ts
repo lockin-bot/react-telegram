@@ -29,10 +29,17 @@ export type {
   Node
 };
 
+export type { InputCallbackData };
+
+interface InputCallbackData {
+  callback: (text: string) => void;
+  autoDelete?: boolean;
+}
+
 interface Container {
   root: RootNode;
   buttonHandlers: Map<string, () => void>;
-  inputCallbacks: Array<(text: string) => void>;
+  inputCallbacks: Array<InputCallbackData>;
   onRenderContainer?: (root: RootNode) => void;
 }
 
@@ -95,7 +102,7 @@ const hostConfig: ReactReconciler.HostConfig<
       case 'row':
         return { type: 'row', children: [] };
       case 'input':
-        return { type: 'input', onSubmit: props.onSubmit };
+        return { type: 'input', onSubmit: props.onSubmit, autoDelete: props.autoDelete };
       default:
         return { type: 'formatted', format: 'bold', children: [] };
     }
@@ -161,7 +168,10 @@ const hostConfig: ReactReconciler.HostConfig<
     container.inputCallbacks = [];
     container.root.children.forEach((child: any) => {
       if (child.type === 'input' && child.onSubmit) {
-        container.inputCallbacks.push(child.onSubmit);
+        container.inputCallbacks.push({
+          callback: child.onSubmit,
+          autoDelete: child.autoDelete
+        });
       }
     });
     

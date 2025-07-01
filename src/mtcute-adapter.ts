@@ -58,11 +58,30 @@ export class MtcuteAdapter {
           }
         }
       } else if (msg.text) {
+        // Track if any input has autoDelete enabled
+        let shouldDelete = false;
+        
         this.activeContainers.forEach(container => {
-          container.container.inputCallbacks.forEach(callback => {
-            callback(msg.text!);
+          container.container.inputCallbacks.forEach(inputData => {
+            // Call the callback
+            inputData.callback(msg.text!);
+            
+            // Check if this input has autoDelete enabled
+            if (inputData.autoDelete) {
+              shouldDelete = true;
+            }
           });
         });
+        
+        // Delete the user's message if any input had autoDelete enabled
+        if (shouldDelete) {
+          try {
+            await msg.delete();
+          } catch (err) {
+            // Ignore errors if message deletion fails (e.g., bot lacks permissions)
+            console.error('Failed to delete message:', err);
+          }
+        }
       }
     });
 

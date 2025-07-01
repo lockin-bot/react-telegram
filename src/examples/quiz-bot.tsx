@@ -103,8 +103,8 @@ const QuizBot: React.FC = () => {
         </>
       )}
       
-      {/* Input handler for answers */}
-      {waitingForAnswer && <input onSubmit={handleAnswer} />}
+      {/* Input handler for answers - auto-delete for cleaner chat */}
+      {waitingForAnswer && <input onSubmit={handleAnswer} autoDelete />}
     </>
   );
 };

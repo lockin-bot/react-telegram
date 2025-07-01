@@ -58,6 +58,7 @@ declare module 'react' {
       
       input: {
         onSubmit?: (text: string) => void;
+        autoDelete?: boolean;
       };
     }
   }
@@ -122,6 +123,7 @@ export interface TelegramRowNode {
 export interface TelegramInputNode {
   type: 'input';
   onSubmit?: (text: string) => void;
+  autoDelete?: boolean;
 }
 
 export interface TelegramRootNode {

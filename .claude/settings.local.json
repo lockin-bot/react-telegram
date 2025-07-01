@@ -14,7 +14,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(bun tsc:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(bun x tsc:*)"
     ],
     "deny": []
   }

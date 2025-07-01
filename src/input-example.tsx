@@ -43,7 +43,7 @@ const InputExample: React.FC = () => {
       {'\n\n'}
       
       {/* Input handler - will process any reply to this message */}
-      {waitingForInput && <input onSubmit={handleInput} />}
+      {waitingForInput && <input onSubmit={handleInput} autoDelete />}
       
       {/* Button to clear history */}
       {messages.length > 0 && (
