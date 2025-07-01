@@ -1,6 +1,6 @@
-/// <reference path="./jsx.d.ts" />
+/// <reference types="@react-telegram/core" />
 import React, { useState } from 'react';
-import { createContainer } from './reconciler';
+import { createContainer } from '@react-telegram/core';
 
 // Create container and render
 const { container, render, clickButton } = createContainer();

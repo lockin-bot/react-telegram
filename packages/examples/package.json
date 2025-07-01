@@ -1,0 +1,25 @@
+{
+  "name": "@react-telegram/examples",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Examples for React Telegram",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/example-bot.tsx",
+    "counter": "bun run src/example.tsx",
+    "typed": "bun run src/typed-example.tsx",
+    "input": "bun run src/input-example.tsx",
+    "quiz": "bun run src/quiz-bot.tsx",
+    "autodelete": "bun run src/input-autodelete-demo.tsx",
+    "br-demo": "bun run src/br-demo.tsx"
+  },
+  "dependencies": {
+    "@react-telegram/core": "workspace:*",
+    "@react-telegram/mtcute-adapter": "workspace:*",
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "npm:pure-react-types@^0.1.4",
+    "typescript": "^5"
+  }
+}

@@ -1,6 +1,6 @@
-/// <reference path="../jsx.d.ts" />
+/// <reference types="@react-telegram/core" />
 import React, { useState } from 'react';
-import { MtcuteAdapter } from '../mtcute-adapter';
+import { MtcuteAdapter } from '@react-telegram/mtcute-adapter';
 
 const AutoDeleteDemo: React.FC = () => {
   const [mode, setMode] = useState<'normal' | 'secret'>('normal');

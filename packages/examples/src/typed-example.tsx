@@ -1,7 +1,7 @@
-/// <reference path="./jsx.d.ts" />
+/// <reference types="@react-telegram/core" />
 import React, { useState } from 'react';
-import { createContainer } from './reconciler';
-import type { RootNode } from './reconciler';
+import { createContainer } from '@react-telegram/core';
+import type { RootNode } from '@react-telegram/core';
 
 // This example demonstrates TypeScript support with custom JSX elements
 

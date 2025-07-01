@@ -28,5 +28,10 @@
     
     // Types
     "types": ["bun-types", "pure-react-types"]
-  }
+  },
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/mtcute-adapter" },
+    { "path": "./packages/examples" }
+  ]
 }

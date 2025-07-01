@@ -11,8 +11,8 @@ import type {
   CodeBlockNode, 
   BlockQuoteNode, 
   RowNode 
-} from './reconciler';
-import { createContainer } from './reconciler';
+} from '@react-telegram/core';
+import { createContainer } from '@react-telegram/core';
 import type { ReactElement } from 'react';
 
 export interface MtcuteAdapterConfig {
