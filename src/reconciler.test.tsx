@@ -324,4 +324,60 @@ describe('Telegram Reconciler', () => {
     container.inputCallbacks[0]?.callback('test message');
     expect(onSubmit).toHaveBeenCalledWith('test message');
   });
+
+  it('should preserve input elements across re-renders', async () => {
+    const { container, render, clickButton } = createContainer();
+    
+    const App = () => {
+      const [mode, setMode] = useState<'normal' | 'secret'>('normal');
+      const handleNormal = vi.fn();
+      const handleSecret = vi.fn();
+      
+      return (
+        <>
+          {mode === 'normal' ? (
+            <input onSubmit={handleNormal} />
+          ) : (
+            <input onSubmit={handleSecret} autoDelete />
+          )}
+          <row>
+            <button onClick={() => setMode(m => m === 'normal' ? 'secret' : 'normal')}>
+              Toggle
+            </button>
+          </row>
+        </>
+      );
+    };
+    
+    render(<App />);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    // Initial state - normal mode
+    expect(container.root.children[0]).toEqual({
+      type: 'input',
+      onSubmit: expect.any(Function),
+      autoDelete: undefined
+    });
+    expect(container.inputCallbacks).toHaveLength(1);
+    expect(container.inputCallbacks[0]?.autoDelete).toBeUndefined();
+    
+    // Toggle to secret mode
+    clickButton('0-0');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    // Should still have input but with different props
+    expect(container.root.children[0]).toEqual({
+      type: 'input',
+      onSubmit: expect.any(Function),
+      autoDelete: true
+    });
+    expect(container.inputCallbacks).toHaveLength(1);
+    expect(container.inputCallbacks[0]?.autoDelete).toBe(true);
+    
+    // Verify the callback works
+    container.inputCallbacks[0]?.callback('test');
+    
+    // Verify the structure is correct
+    expect(container.inputCallbacks[0]).toBeDefined();
+  });
 });

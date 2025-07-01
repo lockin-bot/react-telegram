@@ -215,9 +215,31 @@ const hostConfig: ReactReconciler.HostConfig<
   ) {
     // Deep clone but preserve functions
     const clone = JSON.parse(JSON.stringify(instance));
-    if (instance.onClick) {
-      clone.onClick = instance.onClick;
+    
+    // Update with new props for specific instance types
+    if (instance.type === 'button') {
+      clone.onClick = newProps.onClick || instance.onClick;
+      // Update button text from new props if available
+      if (newProps.children !== undefined) {
+        let buttonText = '';
+        if (typeof newProps.children === 'string') {
+          buttonText = newProps.children;
+        } else if (Array.isArray(newProps.children)) {
+          buttonText = newProps.children.map((child: any) => 
+            typeof child === 'string' ? child : String(child)
+          ).join('');
+        } else if (newProps.children != null) {
+          buttonText = String(newProps.children);
+        }
+        clone.text = buttonText;
+      }
+    } else if (instance.type === 'input') {
+      clone.onSubmit = newProps.onSubmit;
+      clone.autoDelete = newProps.autoDelete;
+    } else if (instance.type === 'link') {
+      clone.href = newProps.href || instance.href;
     }
+    
     // Handle children based on keepChildren flag
     if (clone.children && Array.isArray(clone.children)) {
       if (keepChildren) {
