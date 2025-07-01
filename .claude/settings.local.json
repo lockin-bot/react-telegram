@@ -1,30 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bun add:*)",
-      "Bash(bun test:*)",
-      "Bash(bun run:*)",
-      "Bash(bun info:*)",
-      "Bash(npm view:*)",
+      "Bash(bun:*)",
       "Bash(find:*)",
-      "Bash(bun remove:*)",
-      "Bash(bunx tsc:*)",
       "Bash(rm:*)",
       "Bash(grep:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(bun tsc:*)",
       "Bash(ls:*)",
-      "Bash(bun x tsc:*)",
-      "Bash(bun:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(rg:*)",
       "Bash(mv:*)",
-      "Bash(gh workflow:*)",
-      "Bash(gh run list:*)",
-      "Bash(gh run view:*)",
-      "Bash(git push:*)"
+      "Bash(gh:*)",
+      "Bash(git:*)"
     ],
     "deny": []
   }
