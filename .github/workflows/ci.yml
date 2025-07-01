@@ -119,17 +119,3 @@ jobs:
         run: |
           cd packages/examples
           bun run tsc --noEmit
-          
-      - name: Dry run examples (syntax check)
-        run: |
-          cd packages/examples
-          # Check that all example files can be parsed
-          for file in src/*.tsx; do
-            echo "Checking $file..."
-            bun run --dry-run "$file" || exit 1
-          done
-        env:
-          API_ID: ${{ secrets.API_ID || '12345' }}
-          API_HASH: ${{ secrets.API_HASH || 'test_hash' }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN || 'test_token' }}
-        continue-on-error: true

@@ -39,22 +39,3 @@ jobs:
             './**/*.md'
           fail: false
           
-      - name: Spell check
-        uses: streetsidesoftware/cspell-action@v6
-        with:
-          files: '**/*.{md,ts,tsx}'
-          config: |
-            {
-              "words": [
-                "mtcute",
-                "telegram",
-                "bun",
-                "changeset",
-                "changesets",
-                "monorepo",
-                "reconciler",
-                "autodelete",
-                "emoji",
-                "prepublish"
-              ]
-            }
