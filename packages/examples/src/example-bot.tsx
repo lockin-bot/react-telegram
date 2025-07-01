@@ -65,6 +65,55 @@ const TodoApp = () => {
   );
 };
 
+const ButtonLimitTestApp = () => {
+  return (
+    <>
+      <b>🚫 Button Limit Test</b>
+      <br />
+      <br />
+      This command creates too many buttons to test the button limit error.
+      <br />
+      <br />
+      <row>
+        <button onClick={() => {}}>Button 1</button>
+        <button onClick={() => {}}>Button 2</button>
+        <button onClick={() => {}}>Button 3</button>
+        <button onClick={() => {}}>Button 4</button>
+        <button onClick={() => {}}>Button 5</button>
+        <button onClick={() => {}}>Button 6</button>
+        <button onClick={() => {}}>Button 7</button>
+        <button onClick={() => {}}>Button 8</button>
+        <button onClick={() => {}}>Button 9</button>
+        <button onClick={() => {}}>Button 10</button>
+      </row>
+      <row>
+        <button onClick={() => {}}>Button 11</button>
+        <button onClick={() => {}}>Button 12</button>
+        <button onClick={() => {}}>Button 13</button>
+        <button onClick={() => {}}>Button 14</button>
+        <button onClick={() => {}}>Button 15</button>
+        <button onClick={() => {}}>Button 16</button>
+        <button onClick={() => {}}>Button 17</button>
+        <button onClick={() => {}}>Button 18</button>
+        <button onClick={() => {}}>Button 19</button>
+        <button onClick={() => {}}>Button 20</button>
+      </row>
+      <row>
+        <button onClick={() => {}}>Button 21</button>
+        <button onClick={() => {}}>Button 22</button>
+        <button onClick={() => {}}>Button 23</button>
+        <button onClick={() => {}}>Button 24</button>
+        <button onClick={() => {}}>Button 25</button>
+        <button onClick={() => {}}>Button 26</button>
+        <button onClick={() => {}}>Button 27</button>
+        <button onClick={() => {}}>Button 28</button>
+        <button onClick={() => {}}>Button 29</button>
+        <button onClick={() => {}}>Button 30</button>
+      </row>
+    </>
+  );
+};
+
 const HelpApp = () => {
   const [section, setSection] = useState<'main' | 'formatting' | 'features'>('main');
   
@@ -142,6 +191,8 @@ const HelpApp = () => {
       <br />
       /todo - Todo list manager
       <br />
+      /buttontest - Test button limit error
+      <br />
       /help - This help message
       <br />
       <br />
@@ -175,6 +226,7 @@ async function main() {
   adapter.onCommand('help', () => <HelpApp />);
   adapter.onCommand('counter', () => <CounterApp />);
   adapter.onCommand('todo', () => <TodoApp />);
+  adapter.onCommand('buttontest', () => <ButtonLimitTestApp />);
   
   // Start the bot
   await adapter.start(config.botToken);

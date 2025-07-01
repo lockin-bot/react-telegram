@@ -225,11 +225,19 @@ export class MtcuteAdapter {
     if (rows.length === 0) return undefined;
     
     const keyboard: tl.TypeKeyboardButton[][] = rows.map(row => 
-      row.children.map(button => ({
+    {
+      const rowButtons = row.children.map(button => ({
         _: 'keyboardButtonCallback',
         text: button.text,
         data: Buffer.from(`${containerId}:${button.id}`)
       }) as tl.TypeKeyboardButton)
+
+      if (rowButtons.length >8) {
+        throw new Error('Row has more than 8 buttons');
+      };
+
+      return rowButtons;
+    }
     );
     
     return { _: 'replyInlineMarkup', rows: keyboard.map(row => ({ _: 'keyboardButtonRow', buttons: row })) };
@@ -248,23 +256,28 @@ export class MtcuteAdapter {
     
     // Set up re-render callback
     container.container.onRenderContainer = async (root) => {
-      const textWithEntities = this.rootNodeToTextWithEntities(root);
-      const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
-      
-      if (messageId === null) {
-        // First render: send a new message
-        const sentMessage = await this.client.sendText(chatId, textWithEntities, {
-          replyMarkup
-        });
-        messageId = sentMessage.id;
-      } else {
-        // Subsequent renders: edit the existing message
-        await this.client.editMessage({
-          chatId,
-          message: messageId,
-          text: textWithEntities,
-          replyMarkup
-        });
+      try {
+        const textWithEntities = this.rootNodeToTextWithEntities(root);
+        const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
+        
+        if (messageId === null) {
+          // First render: send a new message
+          const sentMessage = await this.client.sendText(chatId, textWithEntities, {
+            replyMarkup
+          });
+          messageId = sentMessage.id;
+        } else {
+          // Subsequent renders: edit the existing message
+          await this.client.editMessage({
+            chatId,
+            message: messageId,
+            text: textWithEntities,
+              replyMarkup
+            });
+          }
+      } catch (err) {
+        console.error('Error sending message:', err);
+        await this.client.sendText(chatId, 'Error sending message, please try again later.');
       }
     };
     
