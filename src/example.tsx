@@ -14,6 +14,7 @@ const App = () => {
   return (
     <>
       <b>Welcome to Telegram React!</b>
+      <br />
       <i>Current count: {count}</i>
       <row>
         <button onClick={() => setCount(p => p - 1)}>➖ Decrease</button>

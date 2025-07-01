@@ -51,16 +51,19 @@ const QuizBot: React.FC = () => {
     return (
       <>
         <b>🎉 Quiz Complete!</b>
-        {'\n\n'}
+        <br />
+        <br />
         Your final score: <b>{score}/{questions.length}</b>
-        {'\n\n'}
+        <br />
+        <br />
         {score === questions.length ? 
           "Perfect score! Well done! 🌟" : 
           score >= questions.length / 2 ?
             "Good job! 👍" :
             "Better luck next time! 📚"
         }
-        {'\n\n'}
+        <br />
+        <br />
         <row>
           <button onClick={restart}>Play Again</button>
         </row>
@@ -73,33 +76,36 @@ const QuizBot: React.FC = () => {
   return (
     <>
       <b>Quiz Bot 🤖</b>
-      {'\n'}
+      <br />
       Question {currentQuestion + 1} of {questions.length}
-      {'\n'}
+      <br />
       Score: {score}/{currentQuestion}
-      {'\n\n'}
+      <br />
+      <br />
       
       <b>{currentQ?.question}</b>
-      {'\n\n'}
+      <br />
+      <br />
       
       {lastAnswer !== null && (
         <>
           Your answer: <code>{lastAnswer}</code>
-          {'\n'}
+          <br />
           {lastAnswer.toLowerCase().trim() === currentQ?.answer ? 
             "✅ Correct!" : 
             `❌ Wrong! The answer was: ${currentQ?.answer}`
           }
-          {'\n\n'}
+          <br />
+          <br />
           {currentQuestion < questions.length - 1 && "Next question coming up..."}
-          {'\n'}
+          <br />
         </>
       )}
       
       {waitingForAnswer && !lastAnswer && (
         <>
           <i>Reply to this message with your answer!</i>
-          {'\n'}
+          <br />
         </>
       )}
       

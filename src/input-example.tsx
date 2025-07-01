@@ -19,28 +19,31 @@ const InputExample: React.FC = () => {
   return (
     <>
       <b>Input Example</b>
-      {'\n\n'}
+      <br />
+      <br />
       
       {messages.length === 0 ? (
         <>
           <i>Reply to this message to send text!</i>
-          {'\n\n'}
+          <br />
+          <br />
           The bot will echo whatever you type.
         </>
       ) : (
         <>
           <b>Message History:</b>
-          {'\n'}
+          <br />
           {messages.map((msg, idx) => (
             <React.Fragment key={idx}>
               {msg}
-              {'\n'}
+              <br />
             </React.Fragment>
           ))}
         </>
       )}
       
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Input handler - will process any reply to this message */}
       {waitingForInput && <input onSubmit={handleInput} autoDelete />}

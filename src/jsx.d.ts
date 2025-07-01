@@ -60,6 +60,9 @@ declare module 'react' {
         onSubmit?: (text: string) => void;
         autoDelete?: boolean;
       };
+      
+      // Line break
+      br: {};
     }
   }
 }

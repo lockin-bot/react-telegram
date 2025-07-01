@@ -114,6 +114,8 @@ const hostConfig: ReactReconciler.HostConfig<
         return { type: 'row', children: [] };
       case 'input':
         return { type: 'input', onSubmit: props.onSubmit, autoDelete: props.autoDelete };
+      case 'br':
+        return { type: 'text', content: '\n' };
       default:
         return { type: 'formatted', format: 'bold', children: [] };
     }

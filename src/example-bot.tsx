@@ -9,9 +9,11 @@ const CounterApp = () => {
   return (
     <>
       <b>🔢 Counter Bot</b>
-      {'\n\n'}
+      <br />
+      <br />
       <i>Current count: {count}</i>
-      {'\n\n'}
+      <br />
+      <br />
       <row>
         <button onClick={() => setCount(c => c - 1)}>➖ Decrease</button>
         <button onClick={() => setCount(c => c + 1)}>➕ Increase</button>
@@ -30,18 +32,19 @@ const TodoApp = () => {
   return (
     <>
       <b>📝 Todo List</b>
-      {'\n\n'}
+      <br />
+      <br />
       {todos.length === 0 ? (
         <i>No todos yet!</i>
       ) : (
         todos.map((todo, i) => (
           <React.Fragment key={i}>
             {showCompleted ? <s>{todo}</s> : todo}
-            {'\n'}
+            <br />
           </React.Fragment>
         ))
       )}
-      {'\n'}
+      <br />
       <row>
         <button onClick={() => setTodos([...todos, `Task ${todos.length + 1}`])}>
           ➕ Add Task
@@ -69,27 +72,29 @@ const HelpApp = () => {
     return (
       <>
         <b>Text Formatting Examples</b>
-        {'\n\n'}
+        <br />
+        <br />
         <b>Bold text</b>
-        {'\n'}
+        <br />
         <i>Italic text</i>
-        {'\n'}
+        <br />
         <u>Underlined text</u>
-        {'\n'}
+        <br />
         <s>Strikethrough</s>
-        {'\n'}
+        <br />
         <tg-spoiler>Hidden spoiler</tg-spoiler>
-        {'\n'}
+        <br />
         <code>inline code</code>
-        {'\n\n'}
+        <br />
+        <br />
         <pre>
 {`function example() {
   return "Code block";
 }`}
         </pre>
-        {'\n'}
+        <br />
         <blockquote>This is a quote</blockquote>
-        {'\n'}
+        <br />
         <row>
           <button onClick={() => setSection('main')}>⬅️ Back</button>
         </row>
@@ -101,7 +106,8 @@ const HelpApp = () => {
     return (
       <>
         <b>Bot Features</b>
-        {'\n\n'}
+        <br />
+        <br />
         <blockquote expandable>
           This bot demonstrates a React-based Telegram bot using a custom reconciler.
           
@@ -112,7 +118,7 @@ const HelpApp = () => {
           • Custom emoji support
           • Dynamic content updates
         </blockquote>
-        {'\n'}
+        <br />
         Links: <a href="https://github.com">GitHub</a> | <a href="tg://user?id=123456">Contact</a>
         {'\n\n'}
         <row>
@@ -125,17 +131,20 @@ const HelpApp = () => {
   return (
     <>
       <b>🤖 React Telegram Bot</b>
-      {'\n\n'}
+      <br />
+      <br />
       Welcome! This bot is powered by React ⚛️
-      {'\n\n'}
+      <br />
+      <br />
       Available commands:
-      {'\n'}
+      <br />
       /counter - Interactive counter
-      {'\n'}
+      <br />
       /todo - Todo list manager
-      {'\n'}
+      <br />
       /help - This help message
-      {'\n\n'}
+      <br />
+      <br />
       <row>
         <button onClick={() => setSection('formatting')}>📝 Formatting</button>
         <button onClick={() => setSection('features')}>✨ Features</button>

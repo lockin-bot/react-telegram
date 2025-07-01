@@ -11,9 +11,10 @@ const TypedApp: React.FC = () => {
   return (
     <>
       <b>TypeScript Example</b>
-      {'\n'}
+      <br />
       <i>All custom elements are properly typed!</i>
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Text formatting */}
       <u>Underlined text</u>
@@ -21,7 +22,8 @@ const TypedApp: React.FC = () => {
       <s>Strikethrough</s>
       {' '}
       <code>inline code</code>
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Spoiler */}
       {showSpoiler ? (
@@ -29,17 +31,20 @@ const TypedApp: React.FC = () => {
       ) : (
         <span className="tg-spoiler">Hidden content</span>
       )}
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Links */}
       <a href="https://telegram.org">Telegram Website</a>
       {' | '}
       <a href="tg://user?id=123456">User mention</a>
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Emoji */}
       <tg-emoji emojiId="5368324170671202286">👍</tg-emoji>
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Code block */}
       <pre>
@@ -48,14 +53,15 @@ const TypedApp: React.FC = () => {
 console.log(message);`}
         </code>
       </pre>
-      {'\n'}
+      <br />
       
       {/* Blockquote */}
       <blockquote expandable>
         This is an expandable quote.
         It can contain multiple lines.
       </blockquote>
-      {'\n\n'}
+      <br />
+      <br />
       
       {/* Interactive buttons */}
       <row>

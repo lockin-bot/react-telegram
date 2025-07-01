@@ -22,38 +22,38 @@ const AutoDeleteDemo: React.FC = () => {
   return (
     <>
       <b>Input Auto-Delete Demo</b>
-      {'\n\n'}
-      
+      <br /><br />
       Current mode: <b>{mode === 'normal' ? '📝 Normal Mode' : '🤫 Secret Mode'}</b>
-      {'\n\n'}
+      <br /><br />
       
       {mode === 'normal' ? (
         <>
           <i>Send any message - it will stay in the chat.</i>
-          {'\n'}
+          <br />
           <input onSubmit={handleNormalInput} />
         </>
       ) : (
         <>
           <i>Send a secret message - it will be deleted automatically!</i>
-          {'\n'}
+          <br />
           <input onSubmit={handleSecretInput} autoDelete />
         </>
       )}
       
-      {'\n\n'}
+      <br />
+      <br />
       
       {messages.length > 0 && (
         <>
           <b>Received Messages:</b>
-          {'\n'}
+          <br />
           {messages.map((msg, idx) => (
             <React.Fragment key={idx}>
               • {msg}
-              {'\n'}
+              <br />
             </React.Fragment>
           ))}
-          {'\n'}
+          <br />
         </>
       )}
       
