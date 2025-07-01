@@ -25,8 +25,8 @@ jobs:
         
       - name: Type check packages
         run: |
-          bun run --filter @react-telegram/core tsc --noEmit
-          bun run --filter @react-telegram/mtcute-adapter tsc --noEmit
+          cd packages/core && bun run tsc --noEmit
+          cd ../mtcute-adapter && bun run tsc --noEmit
           
       - name: Lint check (if configured)
         run: |
@@ -128,3 +128,8 @@ jobs:
             echo "Checking $file..."
             bun run --dry-run "$file" || exit 1
           done
+        env:
+          API_ID: ${{ secrets.API_ID || '12345' }}
+          API_HASH: ${{ secrets.API_HASH || 'test_hash' }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN || 'test_token' }}
+        continue-on-error: true

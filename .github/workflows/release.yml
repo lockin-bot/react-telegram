@@ -7,6 +7,13 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+# This workflow requires NPM_TOKEN to be set as a repository secret
+# To add the secret:
+# 1. Go to Settings > Secrets and variables > Actions
+# 2. Click "New repository secret"
+# 3. Name: NPM_TOKEN
+# 4. Value: Your npm access token from https://www.npmjs.com/settings/your-username/tokens
+
 jobs:
   release:
     name: Release with Changesets
