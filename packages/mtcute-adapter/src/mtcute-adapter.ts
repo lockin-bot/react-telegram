@@ -251,6 +251,8 @@ export class MtcuteAdapter {
       const textWithEntities = this.rootNodeToTextWithEntities(root);
       const replyMarkup = this.rootNodeToInlineKeyboard(root, containerId);
       
+      await retryOnRpcError(async () => {
+
       if (messageId === null) {
         // First render: send a new message
         const sentMessage = await this.client.sendText(chatId, textWithEntities, {
@@ -264,8 +266,14 @@ export class MtcuteAdapter {
           message: messageId,
           text: textWithEntities,
           replyMarkup
+        }).catch(e => {
+          if (tl.RpcError.is(e) && e.code === 400 && e.text === "MESSAGE_NOT_MODIFIED") {
+            return;
+          }
+          throw e;
         });
       }
+      })
     };
     
     // Initial render
@@ -292,4 +300,16 @@ export class MtcuteAdapter {
   getDispatcher() {
     return this.dispatcher;
   }
+}
+
+async function retryOnRpcError<T>(fn: () => Promise<T>): Promise<T> {
+  return fn().catch(async (error) => {
+      if (tl.RpcError.is(error) && error.is('FLOOD_WAIT_%d')) {
+          const seconds = error.seconds;
+          console.log(`FLOOD_WAIT_${seconds}: Waiting for ${seconds} seconds`);
+          await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+          return await retryOnRpcError(fn);
+      }
+      throw error;
+  });
 }
