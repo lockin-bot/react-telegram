@@ -16,7 +16,8 @@
   "dependencies": {
     "@react-telegram/core": "workspace:*",
     "@react-telegram/mtcute-adapter": "workspace:*",
-    "react": "^19.1.0"
+    "react": "^19.1.0",
+    "react-router-dom": "^7.6.3"
   },
   "devDependencies": {
     "@types/react": "npm:pure-react-types@^0.1.4",
