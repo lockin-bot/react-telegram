@@ -2,7 +2,7 @@
 
 Build interactive Telegram bots using React components! This monorepo contains packages for creating Telegram bots with familiar React patterns, state management, and full TypeScript support.
 
-[![CI](https://github.com/your-username/react-telegram/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/react-telegram/actions/workflows/ci.yml)
+[![CI](https://github.com/lockin-bot/react-telegram/actions/workflows/ci.yml/badge.svg)](https://github.com/lockin-bot/react-telegram/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@react-telegram/core.svg)](https://www.npmjs.com/package/@react-telegram/core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
@@ -122,7 +122,7 @@ This project uses Bun workspaces for managing multiple packages.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/react-telegram.git
+git clone https://github.com/lockin-bot/react-telegram.git
 cd react-telegram
 
 # Install dependencies
@@ -275,6 +275,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**[⭐ Star this repo](https://github.com/your-username/react-telegram)** if you find it useful!
+**[⭐ Star this repo](https://github.com/lockin-bot/react-telegram)** if you find it useful!
 
 Built with ❤️ and React
