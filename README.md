@@ -42,6 +42,38 @@ yarn add @react-telegram/core @react-telegram/mtcute-adapter
 - **TypeScript Support**: Full type safety with autocompletion
 - **Line Breaks**: Use `<br />` tags for clean formatting
 
+## 🖼️ Screenshots
+
+<p align="center">
+  <img src="./images/counter-bot.png" alt="Counter Bot" width="400" />
+  <br />
+  <em>Counter Bot - Interactive counter with increase/decrease buttons</em>
+</p>
+
+<p align="center">
+  <img src="./images/text-formatter.png" alt="Text Formatter" width="400" />
+  <br />
+  <em>Text Formatter - Demonstrates all text formatting capabilities</em>
+</p>
+
+<p align="center">
+  <img src="./images/calculator.png" alt="Calculator" width="400" />
+  <br />
+  <em>Calculator - Fully functional calculator with button grid</em>
+</p>
+
+<p align="center">
+  <img src="./images/tetris.png" alt="Tetris Game" width="400" />
+  <br />
+  <em>Tetris - Playable Tetris game with controls</em>
+</p>
+
+<p align="center">
+  <img src="./images/react-router.png" alt="React Router Example" width="400" />
+  <br />
+  <em>React Router - Navigation example with MemoryRouter</em>
+</p>
+
 ## 📱 Quick Example
 
 ```tsx
