@@ -55,9 +55,11 @@ export class MtcuteAdapter {
           if (handler) {
             const app = handler(msg);
             await this.sendReactMessage(msg.chat.id, app);
+            return;
           }
         }
-      } else if (msg.text) {
+      } 
+      if (msg.text) {
         // Track if any input has autoDelete enabled
         let shouldDelete = false;
         
