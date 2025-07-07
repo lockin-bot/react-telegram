@@ -74,7 +74,6 @@ async function main() {
   const adapter = new MtcuteAdapter({
     apiId: parseInt(process.env.API_ID!),
     apiHash: process.env.API_HASH!,
-    botToken: process.env.BOT_TOKEN!
   });
 
   // Register the demo command

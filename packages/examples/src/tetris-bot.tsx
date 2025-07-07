@@ -401,11 +401,12 @@ async function main() {
   const config = {
     apiId: parseInt(process.env.API_ID || '0'),
     apiHash: process.env.API_HASH || '',
-    botToken: process.env.BOT_TOKEN || '',
     storage: process.env.STORAGE_PATH || '.mtcute'
   };
   
-  if (!config.apiId || !config.apiHash || !config.botToken) {
+  const botToken = process.env.BOT_TOKEN || '';
+  
+  if (!config.apiId || !config.apiHash || !botToken) {
     console.error('Please set API_ID, API_HASH, and BOT_TOKEN environment variables');
     process.exit(1);
   }
@@ -417,7 +418,7 @@ async function main() {
   adapter.onCommand('tetris', () => <TetrisGame />);
   
   // Start the bot
-  await adapter.start(config.botToken);
+  await adapter.start(botToken);
   
   console.log('Tetris bot is running! Send /tetris to play.');
 }

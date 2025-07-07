@@ -12,6 +12,7 @@ bun add @react-telegram/mtcute-adapter @react-telegram/core react
 
 ```tsx
 import React from 'react';
+import { TelegramClient } from '@mtcute/bun';
 import { MtcuteAdapter } from '@react-telegram/mtcute-adapter';
 
 const Bot = () => (
@@ -26,15 +27,27 @@ const Bot = () => (
 );
 
 async function main() {
-  const adapter = new MtcuteAdapter({
+  // Option 1: Pass a TelegramClient directly
+  const client = new TelegramClient({
     apiId: parseInt(process.env.API_ID!),
     apiHash: process.env.API_HASH!,
-    botToken: process.env.BOT_TOKEN!
+    storage: '.mtcute'
+  });
+  
+  const adapter = new MtcuteAdapter(client);
+
+  // Option 2: Let the adapter create the client
+  const adapter2 = new MtcuteAdapter({
+    apiId: parseInt(process.env.API_ID!),
+    apiHash: process.env.API_HASH!,
+    storage: '.mtcute' // optional, defaults to '.mtcute'
   });
 
   adapter.onCommand('start', () => <Bot />);
   
+  // Start the bot with token (required)
   await adapter.start(process.env.BOT_TOKEN!);
+  
   console.log('Bot is running!');
 }
 
@@ -55,18 +68,21 @@ main().catch(console.error);
 ### MtcuteAdapter
 
 ```typescript
+// Option 1: Pass a TelegramClient
+const adapter = new MtcuteAdapter(telegramClient);
+
+// Option 2: Pass a config object
 const adapter = new MtcuteAdapter({
   apiId: number,
   apiHash: string,
-  botToken: string,
   storage?: string // Default: '.mtcute'
 });
 ```
 
 ### Methods
 
-- `onCommand(command: string, handler: (ctx) => ReactElement)` - Register a command handler
-- `start(botToken: string)` - Start the bot
+- `onCommand(command: string, handler: (ctx: MessageContext) => ReactElement)` - Register a command handler
+- `start(botToken: string)` - Start the bot (botToken is required)
 - `sendReactMessage(chatId: number | string, app: ReactElement)` - Send a React-powered message
 - `getClient()` - Get the underlying MTCute client
 - `getDispatcher()` - Get the MTCute dispatcher

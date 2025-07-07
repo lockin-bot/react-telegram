@@ -12,7 +12,6 @@ import type { ReactElement } from 'react';
 export interface MtcuteAdapterConfig {
   apiId: number;
   apiHash: string;
-  botToken: string;
   storage?: string;
 }
 
@@ -22,12 +21,16 @@ export class MtcuteAdapter {
   private activeContainers: Map<string, ReturnType<typeof createContainer>> = new Map();
   private commandHandlers: Map<string, (ctx: MessageContext) => ReactElement> = new Map();
 
-  constructor(config: MtcuteAdapterConfig) {
-    this.client = new TelegramClient({
-      apiId: config.apiId,
-      apiHash: config.apiHash,
-      storage: config.storage || '.mtcute',
-    });
+  constructor(clientOrConfig: TelegramClient | MtcuteAdapterConfig) {
+    if (clientOrConfig instanceof TelegramClient) {
+      this.client = clientOrConfig;
+    } else {
+      this.client = new TelegramClient({
+        apiId: clientOrConfig.apiId,
+        apiHash: clientOrConfig.apiHash,
+        storage: clientOrConfig.storage || '.mtcute',
+      });
+    }
 
     this.dispatcher = Dispatcher.for(this.client);
     this.setupHandlers();
