@@ -7,6 +7,7 @@ import type {
   RowNode
 } from '@react-telegram/core';
 import { createContainer } from '@react-telegram/core';
+import type { TelegramNode } from '@react-telegram/core/src/jsx';
 import type { ReactElement } from 'react';
 
 export interface MtcuteAdapterConfig {
@@ -15,13 +16,23 @@ export interface MtcuteAdapterConfig {
   storage?: string;
 }
 
+export interface MessagePersistenceOptions {
+  getPreviousMessageId: (containerId: string) => Promise<number | null>;
+  setPreviousMessageId: (containerId: string, messageId: number) => Promise<void>;
+}
+
+export interface MtcuteAdapterOptions {
+  messagePersistence?: MessagePersistenceOptions;
+}
+
 export class MtcuteAdapter {
   private client: TelegramClient;
   private dispatcher: Dispatcher;
   private activeContainers: Map<string, ReturnType<typeof createContainer>> = new Map();
   private commandHandlers: Map<string, (ctx: MessageContext) => ReactElement> = new Map();
+  private options: MtcuteAdapterOptions;
 
-  constructor(clientOrConfig: TelegramClient | MtcuteAdapterConfig) {
+  constructor(clientOrConfig: TelegramClient | MtcuteAdapterConfig, options: MtcuteAdapterOptions = {}) {
     if (clientOrConfig instanceof TelegramClient) {
       this.client = clientOrConfig;
     } else {
@@ -32,6 +43,7 @@ export class MtcuteAdapter {
       });
     }
 
+    this.options = options;
     this.dispatcher = Dispatcher.for(this.client);
     this.setupHandlers();
   }
@@ -112,7 +124,7 @@ export class MtcuteAdapter {
     const text: string[] = [];
     const entities: tl.TypeMessageEntity[] = [];
     
-    const processNode = (node: any, parentFormat?: string) => {
+    const processNode = (node: TelegramNode) => {
       switch (node.type) {
         case 'text':
           text.push(node.content);
@@ -120,7 +132,7 @@ export class MtcuteAdapter {
           
         case 'formatted':
           const startOffset = text.join('').length;
-          node.children.forEach((child: any) => processNode(child, node.format));
+          node.children.forEach((child) => processNode(child));
           const length = text.join('').length - startOffset;
           
           if (length > 0) {
@@ -149,7 +161,7 @@ export class MtcuteAdapter {
           
         case 'link':
           const linkStartOffset = text.join('').length;
-          node.children.forEach((child: any) => processNode(child));
+          node.children.forEach((child) => processNode(child));
           const linkLength = text.join('').length - linkStartOffset;
           
           if (linkLength > 0) {
@@ -187,7 +199,7 @@ export class MtcuteAdapter {
           
         case 'blockquote':
           const quoteStartOffset = text.join('').length;
-          node.children.forEach((child: any) => processNode(child));
+          node.children.forEach((child) => processNode(child));
           const quoteLength = text.join('').length - quoteStartOffset;
           
           if (quoteLength > 0) {
@@ -235,8 +247,9 @@ export class MtcuteAdapter {
   }
 
   // Create a React-powered message
-  async sendReactMessage(chatId: number | string, app: ReactElement) {
-    const containerId = `${chatId}_${Date.now()}`;
+  async sendReactMessage(chatId: number, app: ReactElement, key?: string) {
+    // Create stable containerId using chatId and optional key
+    const containerId = key ? `${chatId}_${key}` : `${chatId}`;
     const container = createContainer();
     
     // Store the container for button click handling
@@ -245,6 +258,18 @@ export class MtcuteAdapter {
     // Track the message ID for editing
     let messageId: number | null = null;
     
+    // Initialize messageId from persistence if available
+    if (this.options.messagePersistence) {
+      try {
+        const persistedId = await this.options.messagePersistence.getPreviousMessageId(containerId);
+        if (persistedId !== null) {
+          messageId = persistedId;
+        }
+      } catch (error) {
+        console.error('Failed to get persisted message ID:', error);
+      }
+    }
+    
     // Set up re-render callback
     container.container.onRenderContainer = async (root) => {
       const textWithEntities = this.rootNodeToTextWithEntities(root);
@@ -252,26 +277,52 @@ export class MtcuteAdapter {
       
       await retryOnRpcError(async () => {
 
-      if (messageId === null) {
-        // First render: send a new message
-        const sentMessage = await this.client.sendText(chatId, textWithEntities, {
-          replyMarkup
-        });
-        messageId = sentMessage.id;
-      } else {
-        // Subsequent renders: edit the existing message
-        await this.client.editMessage({
-          chatId,
-          message: messageId,
-          text: textWithEntities,
-          replyMarkup
-        }).catch(e => {
-          if (tl.RpcError.is(e) && e.code === 400 && e.text === "MESSAGE_NOT_MODIFIED") {
-            return;
+        if (messageId === null) {
+          // First render: send a new message
+          const sentMessage = await this.client.sendText(chatId, textWithEntities, {
+            replyMarkup
+          });
+          messageId = sentMessage.id;
+          
+          // Persist the message ID if persistence is available
+          if (this.options.messagePersistence) {
+            try {
+              await this.options.messagePersistence.setPreviousMessageId(containerId, messageId);
+            } catch (error) {
+              console.error('Failed to persist message ID:', error);
+            }
           }
-          throw e;
-        });
-      }
+        } else {
+          // Subsequent renders: edit the existing message
+          await this.client.editMessage({
+            chatId,
+            message: messageId,
+            text: textWithEntities,
+            replyMarkup
+          }).catch(async e => {
+            if (tl.RpcError.is(e) && e.code === 400 && e.text === "MESSAGE_NOT_MODIFIED") {
+              return;
+            }
+            // If message not found, send a new one
+            if (tl.RpcError.is(e) && e.code === 400 && e.text === "MESSAGE_ID_INVALID") {
+              const sentMessage = await this.client.sendText(chatId, textWithEntities, {
+                replyMarkup
+              });
+              messageId = sentMessage.id;
+              
+              // Update persisted message ID
+              if (this.options.messagePersistence) {
+                try {
+                  await this.options.messagePersistence.setPreviousMessageId(containerId, messageId);
+                } catch (error) {
+                  console.error('Failed to persist message ID:', error);
+                }
+              }
+              return;
+            }
+            throw e;
+          });
+        }
       })
     };
     

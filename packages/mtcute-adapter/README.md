@@ -54,6 +54,30 @@ async function main() {
 main().catch(console.error);
 ```
 
+### With Message Persistence
+
+```tsx
+// Create a simple file-based storage for message IDs
+const messageStorage = new Map<string, number>();
+
+const adapter = new MtcuteAdapter(client, {
+  messagePersistence: {
+    getPreviousMessageId: async (containerId) => {
+      // containerId is either "chatId" or "chatId_key" if key was provided
+      return messageStorage.get(containerId) ?? null;
+    },
+    setPreviousMessageId: async (containerId, messageId) => {
+      messageStorage.set(containerId, messageId);
+      // You could save this to a file or database here
+    }
+  }
+});
+
+// Messages will now be edited instead of recreated after bot restarts
+adapter.onCommand('start', () => <Bot />);
+await adapter.start(process.env.BOT_TOKEN!);
+```
+
 ## Features
 
 - Full React component support for Telegram messages
@@ -62,6 +86,7 @@ main().catch(console.error);
 - Text input support with auto-delete option
 - Command handling
 - TypeScript support
+- Message persistence support for seamless bot restarts
 
 ## API
 
@@ -69,21 +94,29 @@ main().catch(console.error);
 
 ```typescript
 // Option 1: Pass a TelegramClient
-const adapter = new MtcuteAdapter(telegramClient);
+const adapter = new MtcuteAdapter(telegramClient, options?);
 
 // Option 2: Pass a config object
 const adapter = new MtcuteAdapter({
   apiId: number,
   apiHash: string,
   storage?: string // Default: '.mtcute'
-});
+}, options?);
+
+// Options interface
+interface MtcuteAdapterOptions {
+  messagePersistence?: {
+    getPreviousMessageId: (containerId: string) => Promise<number | null>;
+    setPreviousMessageId: (containerId: string, messageId: number) => Promise<void>;
+  };
+}
 ```
 
 ### Methods
 
 - `onCommand(command: string, handler: (ctx: MessageContext) => ReactElement)` - Register a command handler
 - `start(botToken: string)` - Start the bot (botToken is required)
-- `sendReactMessage(chatId: number | string, app: ReactElement)` - Send a React-powered message
+- `sendReactMessage(chatId: number, app: ReactElement, key?: string)` - Send a React-powered message with optional key for stable container ID
 - `getClient()` - Get the underlying MTCute client
 - `getDispatcher()` - Get the MTCute dispatcher
 

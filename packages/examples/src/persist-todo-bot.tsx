@@ -3,16 +3,24 @@ import React from 'react';
 import { TelegramClient } from '@mtcute/bun';
 import { MtcuteAdapter } from '@react-telegram/mtcute-adapter';
 import { FileStorage } from './storage/FileStorage';
+import { MessageIdStorage } from './storage/MessageIdStorage';
 import { RootStore } from './stores/RootStore';
 import { PersistentTodoBot } from './components/PersistentTodoBot';
 
 // Store instances globally to persist across command invocations
 let rootStore: RootStore | null = null;
 let storage: FileStorage | null = null;
+let messageIdStorage: MessageIdStorage | null = null;
 
 async function initializeStore() {
   if (!storage) {
     storage = new FileStorage('todos.json');
+  }
+  
+  if (!messageIdStorage) {
+    // Use a separate file for message IDs
+    const messageStorage = new FileStorage('message-ids.json');
+    messageIdStorage = new MessageIdStorage(messageStorage);
   }
   
   if (!rootStore) {
@@ -21,7 +29,7 @@ async function initializeStore() {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   
-  return rootStore;
+  return { rootStore, messageIdStorage };
 }
 
 async function main() {
@@ -44,14 +52,23 @@ async function main() {
     storage: config.storage,
   });
   
-  // Create adapter with the client
-  const adapter = new MtcuteAdapter(client);
+  // Initialize the store and message storage
+  const { rootStore: store, messageIdStorage: msgStorage } = await initializeStore();
   
-  // Initialize the store
-  const store = await initializeStore();
+  // Create adapter with message persistence
+  const adapter = new MtcuteAdapter(client, {
+    messagePersistence: {
+      getPreviousMessageId: async (containerId) => {
+        return await msgStorage.getMessageId(containerId);
+      },
+      setPreviousMessageId: async (containerId, messageId) => {
+        await msgStorage.setMessageId(containerId, messageId);
+      }
+    }
+  });
   
   // Set up single command handler
-  adapter.onCommand('start', () => (
+  adapter.onCommand('start', (msg) => (
     <PersistentTodoBot store={store.todoStore} />
   ));
   
@@ -60,6 +77,7 @@ async function main() {
   
   console.log('Persistent Todo Bot is running! Send /start to begin.');
   console.log('Todos will be saved to ./storage/todos.json');
+  console.log('Message IDs will be saved to ./storage/message-ids.json');
 }
 
 // Run the bot

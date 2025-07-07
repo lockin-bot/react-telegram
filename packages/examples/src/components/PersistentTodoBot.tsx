@@ -12,31 +12,16 @@ type View = 'welcome' | 'todo' | 'help';
 
 export const PersistentTodoBot = observer(({ store }: PersistentTodoBotProps) => {
   const [view, setView] = useState<View>('welcome');
-  const [waitingForCommand, setWaitingForCommand] = useState(false);
 
   const handleCommand = (text: string) => {
     const command = text.trim().toLowerCase();
     
     if (command === '/help') {
       setView('help');
-      setWaitingForCommand(false);
     } else if (command === '/todo') {
       setView('todo');
-      setWaitingForCommand(false);
-    } else if (command === '/start') {
-      setView('welcome');
-      setWaitingForCommand(false);
     }
   };
-
-  useEffect(() => {
-    // Set up command input when in welcome or help view
-    if (view === 'welcome' || view === 'help') {
-      setWaitingForCommand(true);
-    } else {
-      setWaitingForCommand(false);
-    }
-  }, [view]);
 
   if (view === 'todo') {
     return (
@@ -83,15 +68,7 @@ export const PersistentTodoBot = observer(({ store }: PersistentTodoBotProps) =>
           <button onClick={() => setView('welcome')}>🏠 Home</button>
           <button onClick={() => setView('todo')}>📝 Todos</button>
         </row>
-        {waitingForCommand && (
-          <>
-            <br />
-            <br />
-            <i>Type a command:</i>
-            <br />
-            <input onSubmit={handleCommand} autoDelete />
-          </>
-        )}
+        <input onSubmit={handleCommand} autoDelete />
       </>
     );
   }
@@ -116,7 +93,7 @@ export const PersistentTodoBot = observer(({ store }: PersistentTodoBotProps) =>
       <br />
       <i>Or type a command:</i>
       <br />
-      {waitingForCommand && <input onSubmit={handleCommand} autoDelete />}
+      <input onSubmit={handleCommand} autoDelete />
     </>
   );
 });

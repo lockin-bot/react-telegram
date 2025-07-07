@@ -5,6 +5,7 @@ This example demonstrates how to build a Telegram bot with persistent state usin
 ## Features
 
 - **State Persistence**: Todos are automatically saved to disk and restored on bot restart
+- **Message Persistence**: Bot messages are edited instead of recreated after restarts
 - **MobX Integration**: Reactive state management with MobX
 - **Custom Storage**: Flexible storage layer with file-based and memory implementations
 - **Full CRUD Operations**: Add, complete, edit, and delete todos
@@ -38,6 +39,7 @@ The bot now uses a single `/start` command with an interactive interface:
 
 ### Adapter Configuration
 - Uses the new MtcuteAdapter API that accepts a TelegramClient instance
+- Message persistence to edit existing messages after bot restarts
 - Single `/start` command with all functionality in one React component
 - Interactive navigation between views using buttons and text commands
 
@@ -56,6 +58,7 @@ The bot now uses a single `/start` command with an interactive interface:
 - **IStorage**: Abstract storage interface
 - **FileStorage**: JSON file-based storage
 - **MemoryStorage**: In-memory storage for testing
+- **MessageIdStorage**: Manages Telegram message IDs for persistence
 
 ## Testing
 
@@ -89,15 +92,16 @@ src/
 
 ## How It Works
 
-1. **Persistence**: Every state change is automatically saved to disk
-2. **Restoration**: On bot restart, todos are loaded from storage
-3. **Reactive UI**: MobX ensures UI updates when state changes
-4. **Input Handling**: User messages are captured as todo input
+1. **State Persistence**: Every state change is automatically saved to disk
+2. **Message Persistence**: Message IDs are saved so bot can edit existing messages after restart
+3. **Restoration**: On bot restart, todos and message IDs are loaded from storage
+4. **Reactive UI**: MobX ensures UI updates when state changes
+5. **Input Handling**: User messages are captured as todo input
 
 ## Future Enhancements
 
-- Message ID persistence for seamless UI restoration
 - Multi-user support with separate storage
 - Todo categories and tags
 - Due dates and reminders
 - Export/import functionality
+- Backup to cloud storage
