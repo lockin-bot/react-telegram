@@ -26,8 +26,8 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@mtcute/bun": "^0.24.3",
-    "@mtcute/dispatcher": "^0.24.3",
+    "@mtcute/bun": "^0.25.0",
+    "@mtcute/dispatcher": "^0.25.0",
     "@mtcute/tl": "*",
     "@react-telegram/core": "workspace:*",
     "react": "^19.1.0"
