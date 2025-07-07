@@ -1,16 +1,10 @@
-import { TelegramClient } from '@mtcute/bun';
-import { Dispatcher } from '@mtcute/dispatcher';
 import type { TextWithEntities } from '@mtcute/bun';
+import { TelegramClient } from '@mtcute/bun';
+import { Dispatcher, type MessageContext } from '@mtcute/dispatcher';
 import { tl } from '@mtcute/tl';
-import type { 
-  RootNode, 
-  TextNode, 
-  FormattedNode, 
-  LinkNode, 
-  EmojiNode, 
-  CodeBlockNode, 
-  BlockQuoteNode, 
-  RowNode 
+import type {
+  RootNode,
+  RowNode
 } from '@react-telegram/core';
 import { createContainer } from '@react-telegram/core';
 import type { ReactElement } from 'react';
@@ -26,7 +20,7 @@ export class MtcuteAdapter {
   private client: TelegramClient;
   private dispatcher: Dispatcher;
   private activeContainers: Map<string, ReturnType<typeof createContainer>> = new Map();
-  private commandHandlers: Map<string, (ctx: any) => ReactElement> = new Map();
+  private commandHandlers: Map<string, (ctx: MessageContext) => ReactElement> = new Map();
 
   constructor(config: MtcuteAdapterConfig) {
     this.client = new TelegramClient({
@@ -291,7 +285,7 @@ export class MtcuteAdapter {
   }
 
   // Convenience method to handle commands with React
-  onCommand(command: string, handler: (ctx: any) => ReactElement) {
+  onCommand(command: string, handler: (ctx: MessageContext) => ReactElement) {
     this.commandHandlers.set(command, handler);
   }
 
