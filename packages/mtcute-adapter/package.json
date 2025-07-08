@@ -30,6 +30,7 @@
     "@mtcute/dispatcher": "^0.24.3",
     "@mtcute/tl": "*",
     "@react-telegram/core": "workspace:*",
+    "immer": "^10.1.1",
     "react": "^19.1.0"
   },
   "devDependencies": {

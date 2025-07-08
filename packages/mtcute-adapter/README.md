@@ -2,6 +2,10 @@
 
 MTCute adapter for React Telegram bots. This package provides the integration between React Telegram's core reconciler and the MTCute Telegram client library.
 
+This package includes two adapters:
+- **MtcuteAdapter** - Traditional command-based bot adapter
+- **MtcuteSPAAdapter** - Single Page Application adapter for app-like experiences
+
 ## Installation
 
 ```bash
@@ -119,6 +123,64 @@ interface MtcuteAdapterOptions {
 - `sendReactMessage(chatId: number, app: ReactElement, key?: string)` - Send a React-powered message with optional key for stable container ID
 - `getClient()` - Get the underlying MTCute client
 - `getDispatcher()` - Get the MTCute dispatcher
+
+## MtcuteSPAAdapter
+
+The SPA adapter provides a single-page application experience where all interactions happen within one message per chat.
+
+### Usage
+
+```tsx
+import React from 'react';
+import { MtcuteSPAAdapter, useTgState } from '@react-telegram/mtcute-adapter';
+
+const MyApp = () => {
+  // State is automatically persisted per chat
+  const [count, setCount] = useTgState('count', 0);
+  
+  return (
+    <>
+      <b>Count: {count}</b>
+      <br />
+      <row>
+        <button onClick={() => setCount(count + 1)}>Increment</button>
+        <button onClick={() => setCount(0)}>Reset</button>
+      </row>
+    </>
+  );
+};
+
+// Create adapter
+const adapter = new MtcuteSPAAdapter({
+  apiId: YOUR_API_ID,
+  apiHash: 'YOUR_API_HASH'
+});
+
+// Register your app
+adapter.registerApp(<MyApp />);
+
+// Start the bot
+await adapter.start(process.env.BOT_TOKEN!);
+```
+
+### Key Features
+
+1. **Single Message Interface** - All updates happen in one message
+2. **Automatic State Persistence** - State is saved and restored across restarts
+3. **Per-Chat Isolation** - Each chat has its own state
+4. **React Hooks** - `useTgState` and `useTgChatId` for easy state management
+
+### Storage Adapter
+
+```typescript
+const adapter = new MtcuteSPAAdapter(client, {
+  storageAdapter: {
+    getState: async (chatId) => { /* load state */ },
+    setState: async (chatId, state) => { /* save state */ },
+    deleteState: async (chatId) => { /* delete state */ }
+  }
+});
+```
 
 ## License
 

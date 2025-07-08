@@ -13,6 +13,7 @@
     "autodelete": "bun run src/input-autodelete-demo.tsx",
     "br-demo": "bun run src/br-demo.tsx",
     "persist": "bun run src/persist-todo-bot.tsx",
+    "spa": "bun run src/spa-todo-bot.tsx",
     "test": "vitest",
     "test:ui": "vitest --ui"
   },
